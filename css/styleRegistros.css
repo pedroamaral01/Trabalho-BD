@@ -1,0 +1,25 @@
+
+.tabela-emprestimo{    
+    position: absolute;
+    top: 20px;
+    left: 60%;
+    transform: translateX(-50%);
+    color: black;
+    background-color: aliceblue;
+    padding: 15px;
+    border-radius: 15px;
+
+}
+
+.tabela-emprestimo table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-emprestimo th, .tabela-emprestimo td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+     white-space: nowrap;   
+}
+

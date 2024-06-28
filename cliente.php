@@ -1,6 +1,7 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
 if (isset($_POST['submit'])) {
-    include('config.php');
+    include ('config.php');
 
     $nome = $_POST['nome'];
     $cpf = $_POST['cpf'];
@@ -22,9 +23,11 @@ if (isset($_POST['submit'])) {
                 $result_dependente = pg_query($conexao, "INSERT INTO dependente(cpf_cliente, nome, parentesco, endereco) VALUES('$cpf', '$nome_dependente', '$dependente_parentesco[$key]', '$dependente_endereco[$key]')");
             }
         }
+        echo "<script>alert('Cliente cadastrado com sucesso!');</script>";
+    } else {
+        echo "<script>alert('ERRO ao cadastrar cliente!');</script>";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +37,8 @@ if (isset($_POST['submit'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./css/style.css" rel="stylesheet">
+    <link href="./css/styleGlobal.css" rel="stylesheet">
+    <link href="./css/styleCliente.css" rel="stylesheet">
     <title>Cadastro Cliente</title>
 
 </head>
@@ -42,108 +46,91 @@ if (isset($_POST['submit'])) {
 <body>
 
     <div class="barra-lateral">
-        <h1 class="titulo"> I-giota concessões
-        </h1>
+        <h1> I-giota concessões</h1>
+        <img src="./img/logo.png" alt="logo" class="circular-image">
 
-        <div class="img-logo">
-            <img src="./img/logo.png" alt="logo" class="circular-image">
-        </div>
-
-        <ul class="opcoes-cadastro">
-            <li><a href="cliente.php" class="cadastrar-cliente">Cadastrar Cliente</a></li>
-            <li><a href="emprestimo.php" class="cadastrar-cliente">Cadastrar Empréstimo</a></li>
-            <li><a href="registros.php" class="registros">Lista de registros</a></li>
-            <li><a href="pagamento.php" class="pagamento">Pagamento</a></li>
-        </ul>
-
+        <a href="cliente.php" class="links-barra">Cadastrar Cliente</a>
+        <a href="emprestimo.php" class="links-barra">Cadastrar Empréstimo</a>
+        <a href="registros.php" class="links-barra">Lista de registros</a>
+        <a href="pagamento.php" class="links-barra">Pagamento</a>
     </div>
 
     <div class="box">
         <form action="cliente.php" method="POST">
             <fieldset>
-                <legend><b>Formulário Cadastro Cliente</b></legend>
-                <br>
+                <legend><b>Cadastro Cliente</b></legend>
+
                 <div class="inputBox">
-                    <input type="text" name="nome" id="nome" class="inputUser" required>
+                    <input type="text" name="nome" class="inputUser" required>
                     <label for="nome" class="labelInput">Nome completo</label>
                 </div>
-                <br><br>
+
                 <div class="inputBox">
-                    <input type="text" name="cpf" id="cpf" class="inputUser" required>
-                    <label for="cpf" class="labelInput">Cpf</label>
+                    <input type="text" name="cpf" class="inputUser" required>
+                    <label for="cpf" class="labelInput">CPF</label>
                 </div>
-                <br><br>
+
                 <div class="inputBox">
-                    <input type="tel" name="telefone" id="telefone" class="inputUser" required>
+                    <input type="tel" name="telefone" class="inputUser" required>
                     <label for="telefone" class="labelInput">Telefone</label>
                 </div>
-                <br><br>
+
                 <div class="inputBox">
-                    <input type="text" name="cidade" id="cidade" class="inputUser" required>
-                    <label for="cidade" class="labelInput">Cidade</label>
-                </div>
-                <br><br>
-                <div class="inputBox">
-                    <label for="estado">Estado</label>
-                    <select id="estado" name="estado" class="inputUser">
+                    <label for="estado">Estado </label>
+                    <select id="estado" name="estado">
                         <option value="SP">SP</option>
                         <option value="RJ">RJ</option>
                         <option value="MG">MG</option>
                     </select>
-
                 </div>
-                <br><br>
+
+                <div class="inputBox">
+                    <input type="text" name="cidade" class="inputUser" required>
+                    <label for="cidade" class="labelInput">Cidade</label>
+                </div>
+
                 <div class="inputBox">
                     <input type="text" name="endereco" id="endereco" class="inputUser" required>
                     <label for="endereco" class="labelInput">Endereço</label>
                 </div>
 
-                <br><br>
-                <fieldset>
-                    <legend><b>Dependentes</b></legend>
-                    <div id="dependentes-container">
-                      
-                    </div>
-                    <button type="button" id="adicionar-dependente">Adicionar Dependente</button>
-                </fieldset>
+                <button type="button" id="adicionar-dependente">Adicionar Dependente</button>
 
-                <input type="submit" name="submit" id="submit">
+                <div id="dependentes-container">
+                </div>
+
+                <button type="submit" name="submit" id="submit">Enviar</button>
             </fieldset>
         </form>
+    </div>
 
 </body>
 
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const container = document.getElementById("dependentes-container");
-        const btnAdicionarDependente = document.getElementById("adicionar-dependente");
+    const buttonAdicionar = document.querySelector('#adicionar-dependente')
 
-        btnAdicionarDependente.addEventListener("click", function () {
-            const divDependente = document.createElement("div");
-            divDependente.classList.add("dependente");
+    function adicionaFormulario() {
+        const divContainer = document.querySelector('#dependentes-container')
 
-            divDependente.innerHTML = `
+        divContainer.innerHTML += `
+            <fieldset>
+                    <legend><b>Dependente</b></legend>
                 <div class="inputBox">
                     <input type="text" name="dependente_nome[]" class="inputUser" required>
                     <label for="dependente_nome" class="labelInput">Nome do Dependente</label>
                 </div>
-                <br><br>
                 <div class="inputBox">
                     <input type="text" name="dependente_parentesco[]" class="inputUser" required>
                     <label for="dependente_parentesco" class="labelInput">Parentesco</label>
-                </div>
-                <br><br>
+                </div>     
                 <div class="inputBox">
                     <input type="text" name="dependente_endereco[]" class="inputUser" required>
                     <label for="dependente_endereco" class="labelInput">Endereço do Dependente</label>
-                </div>
-                <br><br>
-            `;
+                </div>      
+                 </fieldset> `
 
-            container.appendChild(divDependente);
-        });
-    });
+    }
+    buttonAdicionar.addEventListener("click", adicionaFormulario)
 </script>
 
 </html>
